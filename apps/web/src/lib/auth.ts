@@ -13,3 +13,11 @@ export function clearToken(): void {
 export function isLoggedIn(): boolean {
   return !!getToken();
 }
+
+export function setLanguage(lang: string): void {
+  localStorage.setItem('language', lang);
+}
+
+export function getLanguage(): string {
+  return localStorage.getItem('language') || 'cs';
+}

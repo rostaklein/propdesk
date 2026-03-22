@@ -13,9 +13,9 @@ const password = await bcrypt.hash('password123', 10);
 // --- Users (one per role) ---
 console.log('Seeding users...');
 const [owner, advisor, developer] = await Promise.all([
-  db.insert(schema.users).values({ email: 'owner@propdesk.cz', name: 'Jan Novák', role: 'owner', passwordHash: password }).onConflictDoNothing({ target: schema.users.email }).returning(),
-  db.insert(schema.users).values({ email: 'advisor@propdesk.cz', name: 'Marie Dvořáková', role: 'advisor', passwordHash: password }).onConflictDoNothing({ target: schema.users.email }).returning(),
-  db.insert(schema.users).values({ email: 'developer@propdesk.cz', name: 'Petr Stavitel', role: 'developer', passwordHash: password }).onConflictDoNothing({ target: schema.users.email }).returning(),
+  db.insert(schema.users).values({ email: 'owner@propdesk.cz', name: 'Jan Novák', role: 'owner', language: 'cs', passwordHash: password }).onConflictDoNothing({ target: schema.users.email }).returning(),
+  db.insert(schema.users).values({ email: 'advisor@propdesk.cz', name: 'Marie Dvořáková', role: 'advisor', language: 'cs', passwordHash: password }).onConflictDoNothing({ target: schema.users.email }).returning(),
+  db.insert(schema.users).values({ email: 'developer@propdesk.cz', name: 'Petr Stavitel', role: 'developer', language: 'en', passwordHash: password }).onConflictDoNothing({ target: schema.users.email }).returning(),
 ]);
 
 const ownerId = owner[0]?.id;

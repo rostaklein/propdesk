@@ -1,19 +1,24 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { trpc } from '../../lib/trpc';
-import { setToken } from '../../lib/auth';
+import { setToken, setLanguage } from '../../lib/auth';
 
 export function RegisterPage() {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<'owner' | 'advisor' | 'developer'>('owner');
+  const [language, setLang] = useState<'cs' | 'en'>(i18n.language === 'en' ? 'en' : 'cs');
   const [error, setError] = useState('');
 
   const register = trpc.auth.register.useMutation({
     onSuccess: (data) => {
       setToken(data.token);
+      setLanguage(data.user.language);
+      i18n.changeLanguage(data.user.language);
       navigate('/');
     },
     onError: (err) => setError(err.message),
@@ -22,15 +27,20 @@ export function RegisterPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    register.mutate({ name, email, password, role });
+    register.mutate({ name, email, password, role, language });
+  };
+
+  const handleLanguageChange = (lang: 'cs' | 'en') => {
+    setLang(lang);
+    i18n.changeLanguage(lang);
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
         <div>
-          <h1 className="text-3xl font-bold text-center text-gray-900">PropDesk</h1>
-          <h2 className="mt-2 text-center text-gray-600">Create your account</h2>
+          <h1 className="text-3xl font-bold text-center text-gray-900">{t('common.appName')}</h1>
+          <h2 className="mt-2 text-center text-gray-600">{t('auth.createAccountTitle')}</h2>
         </div>
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
@@ -38,7 +48,7 @@ export function RegisterPage() {
           )}
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-              Name
+              {t('auth.name')}
             </label>
             <input
               id="name"
@@ -51,7 +61,7 @@ export function RegisterPage() {
           </div>
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              Email
+              {t('auth.email')}
             </label>
             <input
               id="email"
@@ -64,7 +74,7 @@ export function RegisterPage() {
           </div>
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-              Password
+              {t('auth.password')}
             </label>
             <input
               id="password"
@@ -78,7 +88,7 @@ export function RegisterPage() {
           </div>
           <div>
             <label htmlFor="role" className="block text-sm font-medium text-gray-700">
-              Role
+              {t('auth.role')}
             </label>
             <select
               id="role"
@@ -86,9 +96,23 @@ export function RegisterPage() {
               onChange={(e) => setRole(e.target.value as typeof role)}
               className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
-              <option value="owner">Owner</option>
-              <option value="advisor">Technical Advisor</option>
-              <option value="developer">Developer</option>
+              <option value="owner">{t('auth.roleOwner')}</option>
+              <option value="advisor">{t('auth.roleAdvisor')}</option>
+              <option value="developer">{t('auth.roleDeveloper')}</option>
+            </select>
+          </div>
+          <div>
+            <label htmlFor="language" className="block text-sm font-medium text-gray-700">
+              {t('auth.language')}
+            </label>
+            <select
+              id="language"
+              value={language}
+              onChange={(e) => handleLanguageChange(e.target.value as 'cs' | 'en')}
+              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            >
+              <option value="cs">{t('common.czech')}</option>
+              <option value="en">{t('common.english')}</option>
             </select>
           </div>
           <button
@@ -96,13 +120,13 @@ export function RegisterPage() {
             disabled={register.isPending}
             className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
           >
-            {register.isPending ? 'Creating account...' : 'Create account'}
+            {register.isPending ? t('auth.creatingAccount') : t('auth.createAccount')}
           </button>
         </form>
         <p className="text-center text-sm text-gray-600">
-          Already have an account?{' '}
+          {t('auth.haveAccount')}{' '}
           <Link to="/login" className="text-blue-600 hover:text-blue-500">
-            Sign in
+            {t('auth.signInLink')}
           </Link>
         </p>
       </div>

@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { trpc } from '../../lib/trpc';
-import { setToken } from '../../lib/auth';
+import { setToken, setLanguage } from '../../lib/auth';
 
 export function LoginPage() {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -12,6 +14,8 @@ export function LoginPage() {
   const login = trpc.auth.login.useMutation({
     onSuccess: (data) => {
       setToken(data.token);
+      setLanguage(data.user.language);
+      i18n.changeLanguage(data.user.language);
       navigate('/');
     },
     onError: (err) => setError(err.message),
@@ -27,8 +31,8 @@ export function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
         <div>
-          <h1 className="text-3xl font-bold text-center text-gray-900">PropDesk</h1>
-          <h2 className="mt-2 text-center text-gray-600">Sign in to your account</h2>
+          <h1 className="text-3xl font-bold text-center text-gray-900">{t('common.appName')}</h1>
+          <h2 className="mt-2 text-center text-gray-600">{t('auth.signInTitle')}</h2>
         </div>
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
@@ -36,7 +40,7 @@ export function LoginPage() {
           )}
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              Email
+              {t('auth.email')}
             </label>
             <input
               id="email"
@@ -49,7 +53,7 @@ export function LoginPage() {
           </div>
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-              Password
+              {t('auth.password')}
             </label>
             <input
               id="password"
@@ -65,13 +69,13 @@ export function LoginPage() {
             disabled={login.isPending}
             className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
           >
-            {login.isPending ? 'Signing in...' : 'Sign in'}
+            {login.isPending ? t('auth.signingIn') : t('auth.signIn')}
           </button>
         </form>
         <p className="text-center text-sm text-gray-600">
-          Don't have an account?{' '}
+          {t('auth.noAccount')}{' '}
           <Link to="/register" className="text-blue-600 hover:text-blue-500">
-            Register
+            {t('auth.register')}
           </Link>
         </p>
       </div>
