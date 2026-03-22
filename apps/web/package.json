@@ -14,8 +14,10 @@
     "@tanstack/react-query": "^5.65.0",
     "@trpc/client": "^11.0.0",
     "@trpc/react-query": "^11.0.0",
+    "i18next": "^25.10.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-i18next": "^16.6.1",
     "react-router-dom": "^7.1.0",
     "superjson": "^2.2.0"
   },

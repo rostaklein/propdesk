@@ -5,11 +5,14 @@ export const phaseStatusEnum = pgEnum('phase_status', ['upcoming', 'active', 'co
 export const problemSeverityEnum = pgEnum('problem_severity', ['minor', 'medium', 'high', 'critical']);
 export const problemStatusEnum = pgEnum('problem_status', ['open', 'in_progress', 'resolved', 'verified', 'wont_fix']);
 
+export const languageEnum = pgEnum('language', ['cs', 'en']);
+
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
   email: text('email').unique().notNull(),
   name: text('name').notNull(),
   role: userRoleEnum('role').notNull().default('owner'),
+  language: languageEnum('language').notNull().default('cs'),
   passwordHash: text('password_hash').notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),

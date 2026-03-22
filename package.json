@@ -8,7 +8,8 @@
     "lint": "turbo lint",
     "db:generate": "turbo db:generate --filter=@propdesk/api",
     "db:migrate": "turbo db:migrate --filter=@propdesk/api",
-    "db:push": "turbo db:push --filter=@propdesk/api"
+    "db:push": "turbo db:push --filter=@propdesk/api",
+    "db:seed": "npm run db:seed --workspace=@propdesk/api"
   },
   "devDependencies": {
     "turbo": "^2.4.0",

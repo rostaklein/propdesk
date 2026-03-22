@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { UserRole, PhaseStatus, ProblemSeverity, ProblemStatus } from './enums.js';
+import { Language, UserRole, PhaseStatus, ProblemSeverity, ProblemStatus } from './enums.js';
 
 export const loginSchema = z.object({
   email: z.string().email(),
@@ -11,6 +11,11 @@ export const registerSchema = z.object({
   password: z.string().min(8, 'Password must be at least 8 characters'),
   name: z.string().min(1, 'Name is required'),
   role: z.enum([UserRole.OWNER, UserRole.ADVISOR, UserRole.DEVELOPER]),
+  language: z.enum([Language.CS, Language.EN]).default('cs'),
+});
+
+export const updateLanguageSchema = z.object({
+  language: z.enum([Language.CS, Language.EN]),
 });
 
 export const createPropertySchema = z.object({
@@ -45,3 +50,4 @@ export type CreatePropertyInput = z.infer<typeof createPropertySchema>;
 export type UpdatePropertyInput = z.infer<typeof updatePropertySchema>;
 export type CreatePhaseInput = z.infer<typeof createPhaseSchema>;
 export type UpdatePhaseInput = z.infer<typeof updatePhaseSchema>;
+export type UpdateLanguageInput = z.infer<typeof updateLanguageSchema>;

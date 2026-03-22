@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { trpc } from '../../lib/trpc';
 
 const STATUS_COLORS: Record<string, string> = {
@@ -9,6 +10,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export function PropertyDetailPage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const { data: property, isLoading: loadingProperty } = trpc.properties.byId.useQuery(
     { id: id! },
@@ -31,8 +33,17 @@ export function PropertyDetailPage() {
     },
   });
 
+  const statusLabel = (status: string) => {
+    const labels: Record<string, string> = {
+      upcoming: t('phases.upcoming'),
+      active: t('phases.active'),
+      completed: t('phases.completed'),
+    };
+    return labels[status] ?? status;
+  };
+
   if (loadingProperty || loadingPhases) {
-    return <div className="text-center py-12 text-gray-500">Loading...</div>;
+    return <div className="text-center py-12 text-gray-500">{t('common.loading')}</div>;
   }
 
   if (!property) {
@@ -42,7 +53,7 @@ export function PropertyDetailPage() {
   return (
     <div>
       <Link to="/" className="text-blue-600 hover:text-blue-500 text-sm mb-4 inline-block">
-        &larr; Back to Properties
+        &larr; {t('properties.backToProperties')}
       </Link>
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">{property.name}</h1>
@@ -50,12 +61,12 @@ export function PropertyDetailPage() {
       </div>
 
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-semibold text-gray-900">Phases</h2>
+        <h2 className="text-lg font-semibold text-gray-900">{t('phases.title')}</h2>
         <button
           onClick={() => setShowForm(!showForm)}
           className="px-3 py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium"
         >
-          {showForm ? 'Cancel' : 'Add Phase'}
+          {showForm ? t('common.cancel') : t('phases.addPhase')}
         </button>
       </div>
 
@@ -72,14 +83,14 @@ export function PropertyDetailPage() {
           className="mb-4 p-4 bg-white rounded-lg shadow space-y-3"
         >
           <div>
-            <label className="block text-sm font-medium text-gray-700">Phase Name</label>
+            <label className="block text-sm font-medium text-gray-700">{t('phases.phaseName')}</label>
             <input
               type="text"
               required
               value={phaseName}
               onChange={(e) => setPhaseName(e.target.value)}
               className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              placeholder="e.g. Interior Phase 1"
+              placeholder={t('phases.namePlaceholder')}
             />
           </div>
           <button
@@ -87,14 +98,14 @@ export function PropertyDetailPage() {
             disabled={createPhase.isPending}
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium disabled:opacity-50"
           >
-            {createPhase.isPending ? 'Creating...' : 'Create Phase'}
+            {createPhase.isPending ? t('common.creating') : t('common.create')}
           </button>
         </form>
       )}
 
       {(!phases || phases.length === 0) ? (
         <div className="text-center py-8 text-gray-500 bg-white rounded-lg shadow">
-          <p>No phases yet. Add a phase to organize inspections.</p>
+          <p>{t('phases.noPhases')}</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -108,7 +119,7 @@ export function PropertyDetailPage() {
                 <span
                   className={`inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[phase.status] ?? ''}`}
                 >
-                  {phase.status}
+                  {statusLabel(phase.status)}
                 </span>
               </div>
               <span className="text-sm text-gray-400">#{phase.sortOrder + 1}</span>

@@ -1,3 +1,9 @@
+export const Language = {
+  CS: 'cs',
+  EN: 'en',
+} as const;
+export type Language = (typeof Language)[keyof typeof Language];
+
 export const UserRole = {
   OWNER: 'owner',
   ADVISOR: 'advisor',
