@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { loginSchema, registerSchema, createPropertySchema, createPhaseSchema } from '../validation.js';
+import { loginSchema, registerSchema, updateLanguageSchema, createPropertySchema, createPhaseSchema } from '../validation.js';
 
 describe('loginSchema', () => {
   it('accepts valid credentials', () => {
@@ -19,7 +19,18 @@ describe('loginSchema', () => {
 });
 
 describe('registerSchema', () => {
-  it('accepts valid registration', () => {
+  it('accepts valid registration with language', () => {
+    const result = registerSchema.safeParse({
+      email: 'test@example.com',
+      password: 'password123',
+      name: 'Test User',
+      role: 'owner',
+      language: 'cs',
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it('defaults language to cs when omitted', () => {
     const result = registerSchema.safeParse({
       email: 'test@example.com',
       password: 'password123',
@@ -27,6 +38,31 @@ describe('registerSchema', () => {
       role: 'owner',
     });
     expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.language).toBe('cs');
+    }
+  });
+
+  it('accepts en language', () => {
+    const result = registerSchema.safeParse({
+      email: 'test@example.com',
+      password: 'password123',
+      name: 'Test User',
+      role: 'advisor',
+      language: 'en',
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it('rejects invalid language', () => {
+    const result = registerSchema.safeParse({
+      email: 'test@example.com',
+      password: 'password123',
+      name: 'Test User',
+      role: 'owner',
+      language: 'de',
+    });
+    expect(result.success).toBe(false);
   });
 
   it('rejects invalid role', () => {
@@ -36,6 +72,28 @@ describe('registerSchema', () => {
       name: 'Test User',
       role: 'admin',
     });
+    expect(result.success).toBe(false);
+  });
+});
+
+describe('updateLanguageSchema', () => {
+  it('accepts cs', () => {
+    const result = updateLanguageSchema.safeParse({ language: 'cs' });
+    expect(result.success).toBe(true);
+  });
+
+  it('accepts en', () => {
+    const result = updateLanguageSchema.safeParse({ language: 'en' });
+    expect(result.success).toBe(true);
+  });
+
+  it('rejects unsupported language', () => {
+    const result = updateLanguageSchema.safeParse({ language: 'fr' });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects missing language', () => {
+    const result = updateLanguageSchema.safeParse({});
     expect(result.success).toBe(false);
   });
 });
