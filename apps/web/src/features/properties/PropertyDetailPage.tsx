@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { trpc } from '../../lib/trpc';
 
@@ -11,6 +11,7 @@ const STATUS_COLORS: Record<string, string> = {
 
 export function PropertyDetailPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { data: property, isLoading: loadingProperty } = trpc.properties.byId.useQuery(
     { id: id! },
@@ -112,7 +113,8 @@ export function PropertyDetailPage() {
           {phases.map((phase) => (
             <div
               key={phase.id}
-              className="p-4 bg-white rounded-lg shadow flex justify-between items-center"
+              onClick={() => navigate(`/properties/${id}/phases/${phase.id}/problems`)}
+              className="p-4 bg-white rounded-lg shadow flex justify-between items-center cursor-pointer hover:shadow-md transition-shadow"
             >
               <div>
                 <h3 className="font-medium text-gray-900">{phase.name}</h3>
@@ -122,7 +124,10 @@ export function PropertyDetailPage() {
                   {statusLabel(phase.status)}
                 </span>
               </div>
-              <span className="text-sm text-gray-400">#{phase.sortOrder + 1}</span>
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-blue-600 hover:text-blue-700">{t('problems.viewProblems')}</span>
+                <span className="text-sm text-gray-400">#{phase.sortOrder + 1}</span>
+              </div>
             </div>
           ))}
         </div>

@@ -3,6 +3,8 @@ import { LoginPage } from './features/auth/LoginPage';
 import { RegisterPage } from './features/auth/RegisterPage';
 import { PropertiesPage } from './features/properties/PropertiesPage';
 import { PropertyDetailPage } from './features/properties/PropertyDetailPage';
+import { ProblemsPage } from './features/problems/ProblemsPage';
+import { ProblemDetailPage } from './features/problems/ProblemDetailPage';
 import { Layout } from './components/Layout';
 import { isLoggedIn } from './lib/auth';
 
@@ -28,6 +30,8 @@ export default function App() {
       >
         <Route index element={<PropertiesPage />} />
         <Route path="properties/:id" element={<PropertyDetailPage />} />
+        <Route path="properties/:propertyId/phases/:phaseId/problems" element={<ProblemsPage />} />
+        <Route path="properties/:propertyId/phases/:phaseId/problems/:problemId" element={<ProblemDetailPage />} />
       </Route>
     </Routes>
   );
